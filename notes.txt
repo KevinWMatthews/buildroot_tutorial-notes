@@ -1,0 +1,21 @@
+http://free-electrons.com/training/buildroot/
+
+buildroot toolchain creates a cross-compiler for you.
+    downloads binutils, c library, gcc, etc.
+
+external toolchain assumes that a toolchain is prexisting, either created by you or someone else.
+    This is faster.
+
+
+
+dtb: Device Tree Blob
+
+To examine the build log for major events,
+grep ">>>" build.log | less
+
+If you encounter
+    fakeroot: preload library `libfakeroot.so' not found, aborting.
+You may need to run a make clean or edit:
+    output/host/usr/bin/fakeroot
+fakeroot is a script, and your path is hard-coded in there. Did you move your directory? If so, it buildroot will not notice.
+I fixed this one problem but then there were others... just did a 'make clean; make' instead.

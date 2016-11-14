@@ -1,0 +1,116 @@
+I never got this to load properly. Instead, I used the pre-packaged version from buildroot itself.
+
+Target Options:
+    Target Architecture:
+        arm little endian
+    Target Binary Format:
+        ELF
+    Target Architecture Variant:
+        cortex-a8
+    Target ABI:
+        eabihf
+
+Build Options:
+
+Toolchain:
+    Toolchain type:
+        external toolchain
+    Toolchain:
+        linaro arm
+
+System configuration:
+
+Kernel:
+    Kernel versin:
+        latest
+        TODO this is different from the tutorial.
+    Defconfig name:
+        omap2plus
+            This is the in-tree defconfig, whatever that means.
+            look in kernel sources [where?] to see that it is named 'omap2plus'
+    Kernel binary format:
+        zImage
+            TODO what's the difference from uImage?
+    Build a Device Tree Blob
+        select this option.
+    Device Tree Source file name:
+        am335x-boneblack
+            look in kernel sources - where?
+
+Target Packages:
+
+Filesystem images:
+    tar the root filesystem:
+        select this
+            we'll just make it a tarball and extract it manually.
+
+Bootloader:
+    U-Boot
+        Uboot board name:
+            am335x_boneblack
+        uboot binary format:
+            u-boot.img
+        Install U-Boot SPL binary image:
+            select this
+        U-boot binary image name:
+            MLO
+            (first stage bootloader?)
+
+
+That's the basic setup. Console cable only.
+
+
+To save your current config file, run:
+make savedefconfig
+This will only save your current options (where they differ from default).
+Nifty.
+Save this to the configs directory.
+
+
+
+
+
+
+
+
+Set root password:
+    System configuration -> Root password
+    you can use:
+        mkpasswd -m md5
+    Paste the output in.
+    Then double the '$' because make uses them for variable expansion.
+
+Set IP address:
+    You can only set DHCP using buildroot; they've intentionally limited the options that are available.
+    We'll set a static IP using a rootfs overlay:
+        buildroot generates a root file system and then 'overlays' our specific configuration files on top of the rootfs.
+    Add eth0 interface at a static IP address:
+
+
+
+
+    cd output/target/etc/network/interfaces
+
+
+    mkdir -p board/<your_path>/rootfs-overlay
+    cd board/<your_path>/rootfs-overlay
+    mkdir -p etc/network
+        auto lo
+        iface lo inet loopback
+
+        auto eth0
+        iface eth0 inet static
+            address 10.0.3.81
+            netmask 255.255.255.0
+
+    # Start with something close:
+    cp output/target/etc/network/interfaces board/buildroot-tutoria:sl/rootfs-overlay/etc/network/
+
+    Add "Root filesystem overlay directory" (under system configuration)
+        board/buildroot-tutorial/rootfs-overlay
+
+
+
+Enable SSH:
+Target packets -> Network applications ->
+    Enable dropbear

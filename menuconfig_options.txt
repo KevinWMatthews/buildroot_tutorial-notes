@@ -1,0 +1,37 @@
+~~~ Build a bare BeagleBoneBlack distro using the built-in defconfig ~~~
+Download a fresh copy of buildroot
+
+make beaglebone_defconfig
+
+# No changes in menuconfig, so don't bother.
+make menuconfig
+
+make
+
+Flash it with:
+sudo dd if=<dir>/sdcard.img of=/dev/sdX
+
+Boot off the SD card. It boots!
+
+The root login is root, no password.
+
+
+
+~~~ Adding a package with no libraries ~~~
+Edit:
+    <buildroot>/package/Config.in
+Add a new menu item here.
+
+Create a new directory in package for your product.
+Beware '_' in folder names?
+Create a Config.in file here.
+Create a <product>.mk file here.
+
+Select the item in menuconfig.
+make.
+
+As before, dd if=<> of=<>
+
+If you want to save this defconfig, you can't simply use make defconfig -- this will overwrite the beaglebone defconfig.
+You should use:
+make savedefconfig BR2_DEFCONFIG=<path>/<filename>_defconfig

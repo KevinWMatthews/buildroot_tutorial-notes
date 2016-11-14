@@ -1,0 +1,57 @@
+Download and extract buildroot.
+[fill this in]
+
+cd into buildroot.
+
+run:
+make menuconfig
+
+Follow the instructions in
+menuconfig_options.txt
+
+Now run make, or run make with fancy-like build logging:
+time make 2>&1 | tee build.log
+    tee will copy standard input to a file and to standard output.
+    Inspect this with less.
+
+To download all the necessary sources for the current configuration, run:
+make source
+
+
+Now we need to get this onto an SD card.
+Format an SD card with two partitions.
+    200 MB fat32 partition, labeled boot.
+    larger ext4 partition (Angstrom is ext3), labeled rootfs.
+Should we set any flags on the partitions? My (successful) Angstrom build has:
+    boot:
+        fat32
+        boot
+        lba
+    rootfs:
+        no flags.
+Looks like we need the flags.
+
+cd buildroot/output/images
+cp MLO u-boot.img zImage am335x-boneblack.dtb /media/kmatthews/boot/
+
+Separate from buildroot, create a uEnv.txt file to tell u-boot how to boot:
+Create uEnv.txt and add:
+bootdir=
+bootpart=0:1
+uenvcmd=run loadimage;run loadramdisk;run findfdt;run loadfdt;run mmcloados
+
+cd <correct_folder>
+cp uEnv.txt /media/kmatthews/boot/
+
+Now extract the rootfs (as root so the permissions are correct) into the rootfs partition:
+sudo tar -C /media/kmatthews/rootfs/ -xf rootfs.tar
+
+Eject the SD card.
+
+Connect the console cable:
+    Ground - J1
+    Receive - J4 (White on my dongle)
+    Transmit - (Green on my dongle)
+    +3v     - P9:3 or P9:4
+
+While the board is booting, push down the button by the SD card (S2).
